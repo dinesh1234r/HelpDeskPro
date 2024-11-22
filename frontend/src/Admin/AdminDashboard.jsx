@@ -48,7 +48,7 @@ function AdminDashBoard() {
     }
     const fetchDashboardData = async () => {
       try {
-        const ticketResponse = await axios.get('http://localhost:5000/admin_agent_role/getalltickets', {
+        const ticketResponse = await axios.get('https://helpdeskpro-backend.onrender.com/admin_agent_role/getalltickets', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -63,7 +63,7 @@ function AdminDashBoard() {
         });
         setStatuses(initialStatuses);
 
-        const userResponse = await axios.get('http://localhost:5000/admin/customer-count', {
+        const userResponse = await axios.get('https://helpdeskpro-backend.onrender.com/admin/customer-count', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -87,7 +87,7 @@ function AdminDashBoard() {
   const fetchMessages = async (ticket) => {
     try {
       const ticket_id = ticket.ticketId;
-      const response = await axios.get(`http://localhost:5000/report/${ticket_id}/messages`, {
+      const response = await axios.get(`https://helpdeskpro-backend.onrender.com/report/${ticket_id}/messages`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -112,7 +112,7 @@ function AdminDashBoard() {
     try {
       const status = statuses[ticket_id];
       await axios.put(
-        `http://localhost:5000/admin_agent_role/${ticket_id}/status`,
+        `https://helpdeskpro-backend.onrender.com/admin_agent_role/${ticket_id}/status`,
         { status },
         {
           headers: {
@@ -167,7 +167,7 @@ function AdminDashBoard() {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/report/${selectedTicketId}/messages`,
+        `https://helpdeskpro-backend.onrender.com/report/${selectedTicketId}/messages`,
         { sender: 'Admin', content: newMessage },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

@@ -49,7 +49,7 @@ function ServiceAgentDashboard() {
     }
     const fetchTickets = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin_agent_role/getalltickets', {
+        const response = await axios.get('https://helpdeskpro-backend.onrender.com/admin_agent_role/getalltickets', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -78,7 +78,7 @@ function ServiceAgentDashboard() {
   const fetchMessages = async (ticket) => {
     try {
       const ticket_id = ticket.ticketId;
-      const response = await axios.get(`http://localhost:5000/report/${ticket_id}/messages`, {
+      const response = await axios.get(`https://helpdeskpro-backend.onrender.com/report/${ticket_id}/messages`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -108,7 +108,7 @@ function ServiceAgentDashboard() {
     try {
       const status = statuses[ticket_id];
       const response = await axios.put(
-        `http://localhost:5000/admin_agent_role/${ticket_id}/status`,
+        `https://helpdeskpro-backend.onrender.com/admin_agent_role/${ticket_id}/status`,
         { status },
         {
           headers: {
@@ -180,7 +180,7 @@ function ServiceAgentDashboard() {
     try {
       console.log(attachmentUrl)
       const response = await axios.post(
-        `http://localhost:5000/report/${selectedTicketId}/messages`,
+        `https://helpdeskpro-backend.onrender.com/report/${selectedTicketId}/messages`,
         {
           sender: "Agent",
           content: newMessage,

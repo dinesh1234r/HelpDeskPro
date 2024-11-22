@@ -31,10 +31,10 @@ function Login() {
     const handleSubmit = async (e) => {
       e.preventDefault();
       
-      console.log('Form data being sent:', formData); // Log the data being sent
+      console.log('Form data being sent:', formData); 
       
       try {
-        const response = await axios.post('http://localhost:5000/customer/login', formData);
+        const response = await axios.post('https://helpdeskpro-backend.onrender.com/customer/login', formData);
         console.log(response);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('ID', response.data.id);

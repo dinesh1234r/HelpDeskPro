@@ -60,7 +60,7 @@ function CreateTicket() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/report/put-ticket', ticketData, {
+      const response = await axios.post('https://helpdeskpro-backend.onrender.com/report/put-ticket', ticketData, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,  
         },

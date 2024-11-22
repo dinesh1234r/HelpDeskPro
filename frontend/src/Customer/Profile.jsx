@@ -61,7 +61,7 @@ function Profile() {
 
     try {
       const response = await axios.put(
-        'http://localhost:5000/customer/update-password',
+        'https://helpdeskpro-backend.onrender.com/customer/update-password',
         { oldPassword:currentPassword, newPassword },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );

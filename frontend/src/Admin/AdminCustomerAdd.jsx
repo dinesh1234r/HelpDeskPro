@@ -64,7 +64,7 @@ function AdminCustomerAdd() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/customer/register', {
+      const response = await axios.post('https://helpdeskpro-backend.onrender.com/customer/register', {
         name,
         email,
         password

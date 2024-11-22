@@ -68,7 +68,7 @@ function ViewTickets() {
 
     const fetchTickets = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/report/get-tickets", {
+        const response = await axios.get("https://helpdeskpro-backend.onrender.com/report/get-tickets", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -93,7 +93,7 @@ function ViewTickets() {
     setCurrentTicket(ticket);
     try {
       const response = await axios.get(
-        `http://localhost:5000/report/${ticket.ticketId}/messages`,
+        `https://helpdeskpro-backend.onrender.com/report/${ticket.ticketId}/messages`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -162,7 +162,7 @@ function ViewTickets() {
     try {
       console.log(attachmentUrl)
       const response = await axios.post(
-        `http://localhost:5000/report/${currentTicket.ticketId}/messages`,
+        `https://helpdeskpro-backend.onrender.com/report/${currentTicket.ticketId}/messages`,
         {
           sender: "Customer",
           content: newMessage,

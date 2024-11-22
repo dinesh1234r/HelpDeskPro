@@ -32,7 +32,7 @@ function AdminCustomerDashBoard() {
     }
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/customers-list', {
+        const response = await axios.get('https://helpdeskpro-backend.onrender.com/admin/customers-list', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -72,7 +72,7 @@ function AdminCustomerDashBoard() {
 
     try {
       await axios.put(
-        `http://localhost:5000/admin/customers/${customerId}`,
+        `https://helpdeskpro-backend.onrender.com/admin/customers/${customerId}`,
         {  newName },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
