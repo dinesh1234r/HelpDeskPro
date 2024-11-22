@@ -2,12 +2,10 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-// POST route for admin login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Check if the admin exists by email
     if(email==="service@gmail.com"&&password==="password123")
     {
         const token = jwt.sign(

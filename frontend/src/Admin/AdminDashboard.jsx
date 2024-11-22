@@ -3,7 +3,16 @@ import axios from 'axios';
 import {
   Box, Button, Stack, Text, Flex, Input, Select, FormControl, 
   Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, 
-  DrawerContent, Table, Thead, Tbody, Tr, Th, Td, Badge, useDisclosure, useToast, HStack
+  DrawerContent, Table, Thead, Tbody, Tr, Th, Td, Badge, useDisclosure, useToast, HStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Image,
+  ModalFooter,
+  Spacer
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode'
@@ -20,8 +29,9 @@ function AdminDashBoard() {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate=useNavigate()
+  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
 
-  // Fetch tickets and users on component mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     const decoded = jwtDecode(token);
@@ -38,13 +48,13 @@ function AdminDashBoard() {
     }
     const fetchDashboardData = async () => {
       try {
-        // Fetch tickets
         const ticketResponse = await axios.get('http://localhost:5000/admin_agent_role/getalltickets', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        setTickets(ticketResponse.data);
+        const reverseTicket=ticketResponse.data.reverse();
+        setTickets(reverseTicket);
         setTotalTickets(ticketResponse.data.length);
 
         const initialStatuses = {};
@@ -53,7 +63,6 @@ function AdminDashBoard() {
         });
         setStatuses(initialStatuses);
 
-        // Fetch user count (specific to users you created)
         const userResponse = await axios.get('http://localhost:5000/admin/customer-count', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -75,7 +84,6 @@ function AdminDashBoard() {
     fetchDashboardData();
   }, []);
 
-  // Fetch messages and description for a specific ticket
   const fetchMessages = async (ticket) => {
     try {
       const ticket_id = ticket.ticketId;
@@ -100,7 +108,6 @@ function AdminDashBoard() {
     }
   };
 
-  // Handle status change for a specific ticket
   const handleChangeStatus = async (ticket_id) => {
     try {
       const status = statuses[ticket_id];
@@ -135,7 +142,6 @@ function AdminDashBoard() {
     }
   };
 
-  // Handle sending a message
   const handleSendMessage = async () => {
     if (!newMessage.trim()) {
       toast({
@@ -187,13 +193,31 @@ function AdminDashBoard() {
       });
     }
   };
+  const handleViewAttachment = (attachmentUrl) => {
+    setSelectedAttachment(attachmentUrl);
+    openModal();
+  };
 
   return (
     <Flex direction="column" p={6} bg="gray.50" minH="100vh">
-      {/* Header Section */}
       <Box mb={6}>
+        <HStack mb={4} bg={'gray.50'}>
+          <Text fontWeight={'bold'} fontSize={'3xl'}>Admin Dashboard</Text>
+          <Spacer/>
+          <Button
+            colorScheme="purple"
+            onClick={() => navigate('/admin-customer_dashboard')} 
+          >
+            Go to Customer List Page
+          </Button>
+          <Button colorScheme='red'
+          onClick={()=>{
+            localStorage.clear()
+            navigate('/')
+          }}
+          >Logout</Button>
+        </HStack>
   <HStack spacing={4} align="center">
-    {/* Total Tickets Box */}
     <Box
       bg="teal.100"
       borderRadius="md"
@@ -212,7 +236,6 @@ function AdminDashBoard() {
       </Text>
     </Box>
 
-    {/* Users Created Box */}
     <Box
       bg="blue.100"
       borderRadius="md"
@@ -231,18 +254,9 @@ function AdminDashBoard() {
       </Text>
     </Box>
   </HStack>
-   <Box mt={4} textAlign="center">
-          <Button
-            colorScheme="purple"
-            onClick={() => navigate('/admin-customer_dashboard')} // Change '/target-page' to your desired route
-          >
-            Go to Customer List Page
-          </Button>
-        </Box>
+   
 </Box>
 
-
-      {/* Tickets Table */}
       <Box bg="white" shadow="md" borderRadius="md" p={4}>
         <Table variant="striped" colorScheme="gray">
           <Thead>
@@ -296,7 +310,6 @@ function AdminDashBoard() {
         </Table>
       </Box>
 
-      {/* Messages Drawer */}
       <Drawer isOpen={isOpen} onClose={onClose} size="md">
         <DrawerOverlay />
         <DrawerContent>
@@ -304,7 +317,7 @@ function AdminDashBoard() {
           <DrawerBody>
             <Box mb={4}>
               <Text fontWeight="bold" mb={2}>Description:</Text>
-              <Text>{ticketDescription}</Text>  {/* Show Description */}
+              <Text>{ticketDescription}</Text>  
             </Box>
             {messages.length === 0 ? (
               <Text>No messages available for this ticket.</Text>
@@ -313,6 +326,16 @@ function AdminDashBoard() {
                 <Box key={index} mb={3} p={3} bg="gray.100" borderRadius="md">
                   <Text fontWeight="bold">{message.sender}</Text>
                   <Text>{message.content}</Text>
+                  {message.attachment && (
+                    <Button
+                    size="sm"
+                    mt={2}
+                    colorScheme="blue"
+                    onClick={() => handleViewAttachment(message.attachment)}
+                  >
+                    View Attachment
+                  </Button>
+                  )}
                   <Text fontSize="sm" color="gray.500">{new Date(message.timestamp).toLocaleString()}</Text>
                 </Box>
               ))
@@ -331,6 +354,25 @@ function AdminDashBoard() {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+      <Modal isOpen={isModalOpen} onClose={closeModal} size={'xl'}>
+  <ModalOverlay />
+  <ModalContent sx={{ maxWidth: "800px", height: "600px" }}>
+    <ModalHeader>Attachment</ModalHeader>
+    <ModalCloseButton />
+    <ModalBody>
+      {selectedAttachment ? (
+        <Image src={selectedAttachment} alt="Attachment" maxW="100%" />
+      ) : (
+        <Text>No attachment to display</Text>
+      )}
+    </ModalBody>
+    <ModalFooter>
+      <Button onClick={closeModal} colorScheme="teal">
+        Close
+      </Button>
+      </ModalFooter>
+    </ModalContent>
+  </Modal>
     </Flex>
   );
 }

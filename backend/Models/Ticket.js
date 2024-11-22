@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid'); 
+const { v4: uuidv4 } = require('uuid');
 
 const ticketSchema = new mongoose.Schema({
   title: {
@@ -23,17 +23,19 @@ const ticketSchema = new mongoose.Schema({
   ticketId: {
     type: String,
     unique: true,
-    default: uuidv4, 
+    default: uuidv4,
   },
   messages: [
     {
       sender: {
-        type: String, 
+        type: String,
         required: true,
       },
       content: {
         type: String,
-        required: true,
+      },
+      attachment: {
+        type: String, 
       },
       timestamp: {
         type: Date,

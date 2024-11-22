@@ -9,7 +9,8 @@ import {
     Text,
     FormControl,
     FormLabel,
-    useToast,
+    useToast,Alert, AlertIcon, AlertDescription,
+    HStack
   } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -31,7 +32,7 @@ function LoginService() {
     const handleSubmit = async (e) => {
       e.preventDefault();
       
-      console.log('Form data being sent:', formData); // Log the data being sent
+      console.log('Form data being sent:', formData); 
       
       try {
         const response = await axios.post('http://localhost:5000/service/login', formData);
@@ -51,7 +52,7 @@ function LoginService() {
         
         navigate('/Service-agent_dashboard');
       } catch (error) {
-        console.error('Login Error:', error); // Log error for debugging
+        console.error('Login Error:', error); 
         toast({
           title: 'Error.',
           description: error.response?.data?.message || 'Something went wrong.',
@@ -122,7 +123,19 @@ function LoginService() {
           </Stack>
         </form>
 
-        
+        <Alert status="info" borderRadius="md" boxShadow="sm" mt={4}>
+        <AlertIcon />
+        <AlertDescription>
+        <HStack>
+          <Text fontSize="md" fontWeight="bold" mb={1}>
+            Note:
+          </Text>
+          <Text fontSize="sm">
+          The credentials to log in are set to <strong>default</strong>. 
+          </Text>
+          </HStack>
+        </AlertDescription>
+      </Alert>
       </Box>
     </Flex>
   );

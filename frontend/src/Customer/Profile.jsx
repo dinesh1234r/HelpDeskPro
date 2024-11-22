@@ -130,6 +130,12 @@ function Profile() {
             <Button type="submit" colorScheme="teal" size="lg" w="full">
               Update Password
             </Button>
+            <Button colorScheme='red'
+            onClick={()=>{
+              navigate('/home-customer')
+            }}>
+              Go to Home Page
+            </Button>
           </Stack>
         </form>
       </Box>

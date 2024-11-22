@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   Box,
   Button,
@@ -13,8 +13,9 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode'
 
-function Register() {
+function AdminCustomerAdd() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -23,6 +24,22 @@ function Register() {
     password: '',
     confirmPassword: '',
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const decoded = jwtDecode(token);
+    if(token&&decoded.Role!="Admin")
+    {
+      toast({
+        title: 'Unauthorized',
+        description: 'You are not authorized to view this page.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate('/')
+    }
+    },[])
 
   const toast = useToast();
 
@@ -52,10 +69,7 @@ function Register() {
         email,
         password
       });
-      localStorage.setItem('token',response.data.token)
-      localStorage.setItem('ID',response.data.id)
-      localStorage.setItem('name',response.data.name)
-      localStorage.setItem('email',response.data.email)
+      
 
       toast({
         title: 'Registration Successful',
@@ -65,7 +79,7 @@ function Register() {
         isClosable: true,
       });
 
-      navigate('/home-customer');
+      navigate('/admin-customer_dashboard');
     } catch (error) {
       toast({
         title: 'Error',
@@ -137,18 +151,18 @@ function Register() {
             <Button type="submit" colorScheme="teal" size="lg" w="full">
               Register
             </Button>
+            <Button
+            colorScheme='red'
+             onClick={()=>{navigate('/admin-customer_dashboard')}}>
+                Go to Customer list page
+            </Button>
           </Stack>
         </form>
 
-        <Text textAlign="center" mt={4}>
-          Already have an account?{' '}
-          <Button variant="link" colorScheme="teal" onClick={() => navigate('/')}>
-            Login
-          </Button>
-        </Text>
+        
       </Box>
     </Flex>
   );
 }
 
-export default Register;
+export default AdminCustomerAdd;

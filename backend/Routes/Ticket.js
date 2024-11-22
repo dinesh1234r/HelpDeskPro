@@ -37,7 +37,7 @@ router.get('/get-tickets', protect, async (req, res) => {
   }
 });
 
-router.get('/:ticketId/messages', async (req, res) => {
+router.get('/:ticketId/messages',protect, async (req, res) => {
   try {
     const { ticketId } = req.params;
     const ticket = await Ticket.findOne({ ticketId })
@@ -52,7 +52,7 @@ router.get('/:ticketId/messages', async (req, res) => {
 });
 
 router.post('/:ticketId/messages', protect, async (req, res) => {
-  const { content, sender } = req.body; 
+  const { content, sender,attachment } = req.body; 
 
   if (!content || !sender) {
     return res.status(400).json({ message: 'Message content and sender are required' });
@@ -68,6 +68,7 @@ router.post('/:ticketId/messages', protect, async (req, res) => {
     const newMessage = {
       sender,
       content,
+      attachment,
       timestamp: new Date(),
     };
 
@@ -75,7 +76,7 @@ router.post('/:ticketId/messages', protect, async (req, res) => {
     ticket.updatedAt = new Date(); 
     await ticket.save();
 
-    res.status(201).json(newMessage); // Respond with the added message
+    res.status(201).json(newMessage); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

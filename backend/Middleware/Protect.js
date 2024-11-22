@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware to protect routes
 const protect = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
@@ -9,9 +8,16 @@ const protect = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.SECURITY_KEY);  
-    req.user = decoded;  
-    next();  
+    if(jwt.verify(token, process.env.SECURITY_KEY))
+      {
+        const decoded = jwt.decode(token);
+        if(decoded.Role=="Customer")
+        {
+          req.user = decoded;  
+        }
+        next();  
+      }  
+    
   } catch (error) {
     res.status(401).json({ message: 'Token is not valid' });
   }

@@ -42,13 +42,13 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   
   console.log('Received data:', req.body);
-  console.log(email+" "+password) // Log incoming data
+  console.log(email+" "+password) 
   
   try {
     const customer = await Customer.findOne({ email });
     if (customer) {
       const isMatch = await bcrypt.compare(password, customer.password);
-console.log('Hashed Password from DB:', customer.password);  // Log the hashed password
+console.log('Hashed Password from DB:', customer.password);  
 console.log('Password being compared:', password);   
       if (isMatch) {
         return res.json({

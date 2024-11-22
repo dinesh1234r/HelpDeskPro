@@ -3,22 +3,36 @@ import axios from 'axios';
 import {
   Box, Button, Stack, Text, Flex, Input, Select, FormControl, 
   Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, 
-  DrawerContent, Table, Thead, Tbody, Tr, Th, Td, Badge, useDisclosure, useToast
+  DrawerContent, Table, Thead, Tbody, Tr, Th, Td, Badge, useDisclosure, useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Image,
+  ModalFooter,
+  VStack,Alert,
+  HStack,AlertIcon,AlertDescription,
+  Spacer
 } from '@chakra-ui/react';
 import {jwtDecode} from 'jwt-decode'
 import { useNavigate } from 'react-router-dom';
+import { storage, ref, uploadBytes, getDownloadURL } from "../Firebase/firebase";
 
 function ServiceAgentDashboard() {
   const [tickets, setTickets] = useState([]);
   const [statuses, setStatuses] = useState({});
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
-  const [ticketDescription, setTicketDescription] = useState('');  // Track ticket description
+  const [ticketDescription, setTicketDescription] = useState(''); 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate=useNavigate()
-  // Fetch tickets for Service Agent
+  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure();
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
   useEffect(() => {
     const token = localStorage.getItem('token');
     const decoded = jwtDecode(token);
@@ -40,7 +54,8 @@ function ServiceAgentDashboard() {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        setTickets(response.data);
+        const reverseTicket=response.data.reverse();
+        setTickets(reverseTicket);
         const initialStatuses = {};
         response.data.forEach((ticket) => {
           initialStatuses[ticket._id] = ticket.status;
@@ -60,7 +75,6 @@ function ServiceAgentDashboard() {
     fetchTickets();
   }, []);
 
-  // Fetch messages and description for a specific ticket
   const fetchMessages = async (ticket) => {
     try {
       const ticket_id = ticket.ticketId;
@@ -70,7 +84,7 @@ function ServiceAgentDashboard() {
         },
       });
       setMessages(response.data.messages || []);
-      setTicketDescription(ticket.description);  // Set description from the ticket
+      setTicketDescription(ticket.description); 
       setSelectedTicketId(ticket.ticketId);
       onOpen();
     } catch (error) {
@@ -83,6 +97,11 @@ function ServiceAgentDashboard() {
         isClosable: true,
       });
     }
+  };
+
+  const handleViewAttachment = (attachmentUrl) => {
+    setSelectedAttachment(attachmentUrl);
+    openModal();
   };
 
   const handleChangeStatus = async (ticket_id) => {
@@ -119,65 +138,88 @@ function ServiceAgentDashboard() {
     }
   };
 
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const uploadFile = async (file) => {
+    const storageRef = ref(storage, `attachments/${file.name}`);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
+  };
+
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) {
+    if (!newMessage.trim() && !selectedFile) {
       toast({
-        title: 'Error',
-        description: 'Message cannot be empty.',
-        status: 'error',
+        title: "Error",
+        description: "Message content or an attachment is required.",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
       return;
     }
 
-    if (!selectedTicketId) {
-      toast({
-        title: 'Error',
-        description: 'No ticket selected.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
+    let attachmentUrl = null;
+    if (selectedFile) {
+      try {
+        attachmentUrl = await uploadFile(selectedFile); 
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        toast({
+          title: "Error",
+          description: "Failed to upload the attachment.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
     }
 
     try {
+      console.log(attachmentUrl)
       const response = await axios.post(
         `http://localhost:5000/report/${selectedTicketId}/messages`,
-        { sender: 'Agent', content: newMessage },
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          sender: "Agent",
+          content: newMessage,
+          attachment: attachmentUrl, 
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      setMessages([...messages, response.data]);
-      setNewMessage('');
-      toast({
-        title: 'Success',
-        description: 'Message sent to the customer.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+
+      setMessages((prevMessages) => [...prevMessages, response.data]);
+      setNewMessage("");
+      setSelectedFile(null); 
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
       toast({
-        title: 'Error',
-        description: 'Error sending message.',
-        status: 'error',
+        title: "Error",
+        description: "Failed to send message.",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
     }
   };
 
+
   return (
     <Flex direction="column" p={6} bg="gray.50" minH="100vh">
-      <Box mb={6}>
+      <HStack mb={6}>
         <Text fontSize="2xl" fontWeight="bold">Service Agent Dashboard</Text>
-      </Box>
+        <Spacer/>
+        <Button colorScheme='red'
+        onClick={()=>{
+          localStorage.clear()
+          navigate('/')
+        }}
+        >Logout</Button>
+      </HStack>
 
-      {/* Tickets Table */}
       <Box bg="white" shadow="md" borderRadius="md" p={4}>
         <Table variant="striped" colorScheme="gray">
           <Thead>
@@ -233,15 +275,32 @@ function ServiceAgentDashboard() {
         </Table>
       </Box>
 
-      {/* Messages Drawer */}
       <Drawer isOpen={isOpen} onClose={onClose} size="md">
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader>Messages for Ticket</DrawerHeader>
+          <DrawerHeader >
+            <VStack>
+              <Text>Messages for Ticket</Text>
+              <Alert status="info" borderRadius="md" boxShadow="sm" >
+        <AlertIcon />
+        <AlertDescription>
+        <HStack>
+          <Text fontSize="md" fontWeight="bold" mb={1}>
+            Note:
+          </Text>
+          <Text fontSize="sm">
+          Attachment cannot be sent without message text.
+          </Text>
+          </HStack>
+        </AlertDescription>
+      </Alert>
+              
+            </VStack>
+          </DrawerHeader>
           <DrawerBody>
             <Box mb={4}>
               <Text fontWeight="bold" mb={2}>Description:</Text>
-              <Text>{ticketDescription}</Text>  {/* Show Description */}
+              <Text>{ticketDescription}</Text> 
             </Box>
             {messages.length === 0 ? (
               <Text>No messages available for this ticket.</Text>
@@ -250,6 +309,16 @@ function ServiceAgentDashboard() {
                 <Box key={index} mb={3} p={3} bg="gray.100" borderRadius="md">
                   <Text fontWeight="bold">{message.sender}</Text>
                   <Text>{message.content}</Text>
+                  {message.attachment && (
+                    <Button
+                    size="sm"
+                    mt={2}
+                    colorScheme="blue"
+                    onClick={() => handleViewAttachment(message.attachment)}
+                  >
+                    View Attachment
+                  </Button>
+                  )}
                   <Text fontSize="sm" color="gray.500">{new Date(message.timestamp).toLocaleString()}</Text>
                 </Box>
               ))
@@ -262,12 +331,32 @@ function ServiceAgentDashboard() {
               onChange={(e) => setNewMessage(e.target.value)}
               mr={2}
             />
+            <Input type="file" onChange={handleFileChange} size="sm" accept="image/*,application/pdf" mr={2} />
             <Button colorScheme="teal" onClick={handleSendMessage}>
               Send
             </Button>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+      <Modal isOpen={isModalOpen} onClose={closeModal} size={'xl'}>
+  <ModalOverlay />
+  <ModalContent sx={{ maxWidth: "800px", height: "600px" }}>
+    <ModalHeader>Attachment</ModalHeader>
+    <ModalCloseButton />
+    <ModalBody>
+      {selectedAttachment ? (
+        <Image src={selectedAttachment} alt="Attachment" maxW="100%" />
+      ) : (
+        <Text>No attachment to display</Text>
+      )}
+    </ModalBody>
+    <ModalFooter>
+      <Button onClick={closeModal} colorScheme="teal">
+        Close
+      </Button>
+    </ModalFooter>
+  </ModalContent>
+</Modal>
     </Flex>
   );
 }

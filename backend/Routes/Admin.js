@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Customer = require('../Models/customer'); 
 const jwt=require('jsonwebtoken')
+const { protect } = require('../Middleware/Protect');  
 
-router.get('/customer-count', async (req, res) => {
+router.get('/customer-count',protect, async (req, res) => {
   try {
     const customerCount = await Customer.countDocuments(); 
     res.status(200).json({ count: customerCount });
@@ -13,7 +14,7 @@ router.get('/customer-count', async (req, res) => {
   }
 });
 
-router.get('/customers-list', async (req, res) => {
+router.get('/customers-list',protect, async (req, res) => {
     try {
       const customers = await Customer.find().select('name email createdAt updatedAt');
       res.status(200).json(customers);
@@ -23,7 +24,7 @@ router.get('/customers-list', async (req, res) => {
     }
   });
 
-  router.put('/customers/:id', async (req, res) => {
+  router.put('/customers/:id',protect, async (req, res) => {
     const { id } = req.params;
     const { newName } = req.body;
   
@@ -32,11 +33,10 @@ router.get('/customers-list', async (req, res) => {
     }
   
     try {
-      // Find customer by ID and update their name
       const updatedCustomer = await Customer.findByIdAndUpdate(
         id,
         { name: newName.trim() },
-        { new: true, runValidators: true } // Return the updated document and validate changes
+        { new: true, runValidators: true } 
       );
   
       if (!updatedCustomer) {
@@ -56,7 +56,6 @@ router.get('/customers-list', async (req, res) => {
   router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-      // Check if the admin exists by email
       if(email==="admin@gmail.com"&&password==="password123")
       {
           const token = jwt.sign(

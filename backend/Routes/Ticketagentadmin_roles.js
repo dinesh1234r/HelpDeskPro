@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../Middleware/Protect');
-const { verifyAgent } = require('../Middleware/VerifyAgent');
-const Ticket = require('../Models/Ticket'); // Assuming you have a Ticket model
+const Ticket = require('../Models/Ticket'); 
 
-// Example route for getting tickets
 router.get('/getalltickets',protect, async (req, res) => {
     try {
       const tickets = await Ticket.find()
-        .populate('customerId', 'name email');  // Populate the 'customerId' field with 'name' and 'email'
+        .populate('customerId', 'name email');  
       res.json(tickets);
     } catch (error) {
       res.status(500).json({ message: 'Error fetching tickets.' });

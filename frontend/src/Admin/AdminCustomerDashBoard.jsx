@@ -16,7 +16,6 @@ function AdminCustomerDashBoard() {
   const toast = useToast();
   const navigate=useNavigate()
 
-  // Fetch customers from the server
   useEffect(() => {
     const token = localStorage.getItem('token');
     const decoded = jwtDecode(token);
@@ -53,14 +52,12 @@ function AdminCustomerDashBoard() {
     fetchCustomers();
   }, []);
 
-  // Handle editing username
   const handleEditUsername = (customerId) => {
     setEditingCustomer(customerId);
     const customer = customers.find((c) => c._id === customerId);
     setNewName(customer.name);
   };
 
-  // Save the updated username
   const handleSaveUsername = async (customerId) => {
     if (!newName.trim()) {
       toast({
@@ -110,23 +107,27 @@ function AdminCustomerDashBoard() {
 
   return (
     <Flex direction="column" p={6} bg="gray.50" minH="100vh">
-      {/* Header Section */}
       <HStack>
       <Box mb={6}>
         <Text fontSize="2xl" fontWeight="bold">Customer List</Text>
       </Box>
       <Spacer/>
-      <Box mb={4}>
+      <Box mb={4} >
+        <Button colorScheme='gray' mr={2}
+        onClick={()=>{
+          navigate('/admin-customer_register')
+        }}
+        >
+          Create Customer
+        </Button>
         <Button
           colorScheme="teal"
-          onClick={() => navigate('/admin_dashboard')} // Specify the route
+          onClick={() => navigate('/admin_dashboard')} 
         >
           Go to Home Page
         </Button>
       </Box>
       </HStack>
-
-      {/* Customer Table */}
       <Box bg="white" shadow="md" borderRadius="md" p={4}>
         <Table variant="striped" colorScheme="gray">
           <Thead>

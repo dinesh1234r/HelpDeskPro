@@ -9,9 +9,11 @@ import ViewTickets from './Customer/ViewTickets';
 import ServiceAgentDashboard from './Service Agent/ServiceAgentDashboard';
 import AdminDashboard from './Admin/AdminDashboard';
 import AdminCustomerDashBoard from './Admin/AdminCustomerDashBoard';
+import AdminCustomerAdd from './Admin/AdminCustomerAdd';
 import Auth from './Auth';
 
 function App() {
+  
   return (
     <Router>
       <Routes>
@@ -24,6 +26,7 @@ function App() {
         <Route path='/Service-agent_dashboard' element={<ServiceAgentDashboard/>}/>
         <Route path='/admin_dashboard' element={<AdminDashboard/>}/>
         <Route path='/admin-customer_dashboard' element={<AdminCustomerDashBoard/>}/>
+        <Route path='/admin-customer_register' element={<AdminCustomerAdd/>}/>
       </Routes>
     </Router>
   );

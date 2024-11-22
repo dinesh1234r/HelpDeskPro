@@ -137,7 +137,6 @@ function CreateTicket() {
           </Stack>
         </form>
         <Stack direction="row" spacing={4} mt={6}>
-          {/* Button to navigate to Home */}
           <Button
             colorScheme="red"
             size="lg"
@@ -147,7 +146,6 @@ function CreateTicket() {
             Go to Home
           </Button>
 
-          {/* Button to navigate to Add Ticket (optional if you want it explicit) */}
           <Button
             colorScheme="teal"
             size="lg"
