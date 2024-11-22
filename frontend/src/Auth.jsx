@@ -22,7 +22,7 @@ function Auth() {
         <Tabs isFitted variant="enclosed">
           <TabList mb={4}>
             <Tab>Customer</Tab>
-            <Tab>Service</Tab>
+            <Tab>Service Agent</Tab>
             <Tab>Admin</Tab>
           </TabList>
 
