@@ -45,7 +45,7 @@ function LoginAdmin() {
         
         toast({
           title: 'Login Successful.',
-          description: `Welcome back, ${response.data.name}!`,
+          description: `Welcome back, Admin!`,
           status: 'success',
           duration: 3000,
           isClosable: true,

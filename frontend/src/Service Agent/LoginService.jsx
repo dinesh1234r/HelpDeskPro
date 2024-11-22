@@ -44,7 +44,7 @@ function LoginService() {
         
         toast({
           title: 'Login Successful.',
-          description: `Welcome back, ${response.data.name}!`,
+          description: `Welcome back, Service Agent!`,
           status: 'success',
           duration: 3000,
           isClosable: true,
