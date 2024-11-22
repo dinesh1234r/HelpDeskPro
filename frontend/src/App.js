@@ -13,7 +13,7 @@ import AdminCustomerAdd from './Admin/AdminCustomerAdd';
 import Auth from './Auth';
 
 function App() {
-  
+  console.log(process.env.REACT_APP_API_KEY)
   return (
     <Router>
       <Routes>

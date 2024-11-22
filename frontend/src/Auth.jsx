@@ -15,7 +15,7 @@ import LoginAdmin from './Admin/LoginAdmin';
 
 
 function Auth() {
-  console.log(process.env.APP_KEY)
+  
   return (
     <Flex direction="column" align="center" justify="center" minH="100vh" bg="gray.50" p={4}>
       <Box maxW="3xl" w="full" bg="white" p={6} boxShadow="lg" rounded="md">
