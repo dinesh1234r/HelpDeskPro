@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   Box,
   Flex,
@@ -11,6 +11,8 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode'
+import { useNavigate } from 'react-router-dom';
 
 function Profile() {
   const [formData, setFormData] = useState({
@@ -18,8 +20,24 @@ function Profile() {
     newPassword: '',
     confirmPassword: '',
   });
-
+  const navigate=useNavigate()
   const toast = useToast();
+
+  useEffect(()=>{
+    const token = localStorage.getItem('token');
+    const decoded = jwtDecode(token);
+    if(token&&decoded.Role!="Customer")
+    {
+      toast({
+        title: 'Unauthorized',
+        description: 'You are not authorized to view this page.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate('/')
+    }
+  },[])
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -6,7 +6,7 @@ const bcrypt=require('bcrypt')
 const {protect} =require('../Middleware/Protect')
 
 const generateToken = (id) => {
-  return jwt.sign({ id },process.env.SECURITY_KEY, { expiresIn: '1d' }); 
+  return jwt.sign({ id,Role:"Customer" },process.env.SECURITY_KEY); 
 };
 
 router.post('/register', async (req, res) => {
@@ -40,30 +40,34 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
+  
+  console.log('Received data:', req.body);
+  console.log(email+" "+password) // Log incoming data
+  
   try {
     const customer = await Customer.findOne({ email });
-
     if (customer) {
-        const isMatch = await bcrypt.compare(password, customer.password);
-
-        if (isMatch) {
-          res.json({
-            id: customer._id,
-            name: customer.name,
-            email: customer.email,
-            token: generateToken(customer._id),
-          });
-        } else {
-          res.status(401).json({ message: 'Invalid email or password' });
-        }
+      const isMatch = await bcrypt.compare(password, customer.password);
+console.log('Hashed Password from DB:', customer.password);  // Log the hashed password
+console.log('Password being compared:', password);   
+      if (isMatch) {
+        return res.json({
+          id: customer._id,
+          name: customer.name,
+          email: customer.email,
+          token: generateToken(customer._id),
+        });
+      } else {
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
     } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 router.put('/update-password', protect, async (req, res) => {
   const { oldPassword, newPassword } = req.body;

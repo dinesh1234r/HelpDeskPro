@@ -5,6 +5,9 @@ const helmet = require('helmet');
 const Customer=require('./Routes/customer')
 const cors = require('cors');
 const Ticket=require('./Routes/Ticket')
+const Ticketagentadmin_roles=require('./Routes/Ticketagentadmin_roles')
+const Admin=require('./Routes/Admin')
+const Service=require('./Routes/Service')
 
 require('dotenv').config();
 
@@ -35,6 +38,9 @@ app.use(express.json());
 app.use(cors());
 app.use('/customer',Customer)
 app.use('/report',Ticket)
+app.use('/admin_agent_role',Ticketagentadmin_roles)
+app.use('/admin',Admin)
+app.use('/service',Service)
 
 app.listen(5000, () => {
     console.log('Backend started running...');

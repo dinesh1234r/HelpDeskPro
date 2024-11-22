@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   Box,
   Button,
@@ -12,6 +12,8 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode'
 
 function CreateTicket() {
   const [ticketData, setTicketData] = useState({
@@ -19,6 +21,23 @@ function CreateTicket() {
     description: '',
   });
   const toast = useToast();
+  const navigate=useNavigate()
+
+  useEffect(()=>{
+    const token = localStorage.getItem('token');
+    const decoded = jwtDecode(token);
+    if(token&&decoded.Role!="Customer")
+    {
+      toast({
+        title: 'Unauthorized',
+        description: 'You are not authorized to view this page.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate('/')
+    }
+  },[])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -117,6 +136,27 @@ function CreateTicket() {
             </Button>
           </Stack>
         </form>
+        <Stack direction="row" spacing={4} mt={6}>
+          {/* Button to navigate to Home */}
+          <Button
+            colorScheme="red"
+            size="lg"
+            w="full"
+            onClick={() => navigate('/home-customer')}
+          >
+            Go to Home
+          </Button>
+
+          {/* Button to navigate to Add Ticket (optional if you want it explicit) */}
+          <Button
+            colorScheme="teal"
+            size="lg"
+            w="full"
+            onClick={() => navigate('/tickets')}
+          >
+            View Tickets
+          </Button>
+        </Stack>
       </Box>
     </Flex>
   );

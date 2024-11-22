@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Flex,
@@ -7,22 +7,54 @@ import {
   Button,
   Text,
   useColorModeValue,
+  HStack,
+  Spacer,
+  useToast
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import {jwtDecode} from 'jwt-decode'
 
 function CustomerHomePage() {
+  const toast=useToast()
   const navigate = useNavigate();
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBg = useColorModeValue('white', 'gray.700');
 
+  useEffect(()=>{
+    const token = localStorage.getItem('token');
+    const decoded = jwtDecode(token);
+    if(token&&decoded.Role!="Customer")
+    {
+      toast({
+        title: 'Unauthorized',
+        description: 'You are not authorized to view this page.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate('/')
+    }
+  },[])
+
   return (
+    <Box bg={bgColor}>
+      <HStack p={4}>
+        <Spacer/>
+        <Button colorScheme='red' onClick={()=>{
+          localStorage.clear();
+          navigate('/')
+        }}>
+          Logout
+        </Button>
+      </HStack>
     <Flex
-      minH="100vh"
+      minH="80vh"
       align="center"
       justify="center"
       bg={bgColor}
       p={6}
     >
+      
       <Stack spacing={8} w="full" maxW="xl" align="center">
         <Heading
           as="h1"
@@ -86,6 +118,7 @@ function CustomerHomePage() {
         </Box>
       </Stack>
     </Flex>
+    </Box>
   );
 }
 

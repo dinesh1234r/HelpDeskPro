@@ -37,4 +37,52 @@ router.get('/get-tickets', protect, async (req, res) => {
   }
 });
 
+router.get('/:ticketId/messages', async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const ticket = await Ticket.findOne({ ticketId })
+    if (!ticket) {
+      return res.status(404).json({ message: 'Ticket not found' });
+    }
+
+    res.json({ messages: ticket.messages });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching messages for the ticket' });
+  }
+});
+
+router.post('/:ticketId/messages', protect, async (req, res) => {
+  const { content, sender } = req.body; 
+
+  if (!content || !sender) {
+    return res.status(400).json({ message: 'Message content and sender are required' });
+  }
+
+  try {
+    const ticket = await Ticket.findOne({ ticketId: req.params.ticketId });
+
+    if (!ticket) {
+      return res.status(404).json({ message: 'Ticket not found' });
+    }
+
+    const newMessage = {
+      sender,
+      content,
+      timestamp: new Date(),
+    };
+
+    ticket.messages.push(newMessage);
+    ticket.updatedAt = new Date(); 
+    await ticket.save();
+
+    res.status(201).json(newMessage); // Respond with the added message
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+
 module.exports = router;

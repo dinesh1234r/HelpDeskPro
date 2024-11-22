@@ -14,12 +14,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Login() {
+function LoginAdmin() {
     const navigate=useNavigate()
 
     const [formData,setFormData]=useState({
-        email:"",
-        password:""
+        email:"admin@gmail.com",
+        password:"password123"
     })
 
     const toast = useToast();
@@ -34,7 +34,7 @@ function Login() {
       console.log('Form data being sent:', formData); // Log the data being sent
       
       try {
-        const response = await axios.post('http://localhost:5000/customer/login', formData);
+        const response = await axios.post('http://localhost:5000/admin/login', formData);
         console.log(response);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('ID', response.data.id);
@@ -49,9 +49,9 @@ function Login() {
           isClosable: true,
         });
         
-        navigate('/home-customer');
+        navigate('/admin_dashboard');
       } catch (error) {
-        console.error('Login Error:', error); 
+        console.error('Login Error:', error); // Log error for debugging
         toast({
           title: 'Error.',
           description: error.response?.data?.message || 'Something went wrong.',
@@ -82,7 +82,7 @@ function Login() {
           textAlign="center"
           color="teal.500"
         >
-          Login to Customer Account
+          Login to Admin Account
         </Heading>
 
         <form onSubmit={handleSubmit}>
@@ -94,6 +94,7 @@ function Login() {
                 placeholder="Enter your email"
                 focusBorderColor="teal.500"
                 name='email'
+                value={formData.email}
                 onChange={(e)=>handlechange(e)}
               />
             </FormControl>
@@ -105,6 +106,7 @@ function Login() {
                 placeholder="Enter your password"
                 focusBorderColor="teal.500"
                 name='password'
+                value={formData.password}
                 onChange={(e)=>handlechange(e)}
               />
             </FormControl>
@@ -120,19 +122,10 @@ function Login() {
           </Stack>
         </form>
 
-        <Text textAlign="center" mt={4}>
-          Don't have an account?{' '}
-          <Button
-            variant="link"
-            colorScheme="teal"
-            onClick={()=>navigate('/register-customer')}
-          >
-            Sign Up
-          </Button>
-        </Text>
+        
       </Box>
     </Flex>
   );
 }
 
-export default Login;
+export default LoginAdmin;

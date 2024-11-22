@@ -1,12 +1,7 @@
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid'); // Import uuid package
+const { v4: uuidv4 } = require('uuid'); 
 
 const ticketSchema = new mongoose.Schema({
-  ticketId: {
-    type: String,
-    unique: true,
-    default: () => uuidv4(), // Generate a unique ID using uuid
-  },
   title: {
     type: String,
     required: true,
@@ -25,6 +20,27 @@ const ticketSchema = new mongoose.Schema({
     enum: ['Active', 'Pending', 'Closed'],
     default: 'Active',
   },
+  ticketId: {
+    type: String,
+    unique: true,
+    default: uuidv4, 
+  },
+  messages: [
+    {
+      sender: {
+        type: String, 
+        required: true,
+      },
+      content: {
+        type: String,
+        required: true,
+      },
+      timestamp: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -33,6 +49,11 @@ const ticketSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+ticketSchema.pre('save', function (next) {
+  this.updatedAt = Date.now();
+  next();
 });
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
