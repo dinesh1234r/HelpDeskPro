@@ -113,7 +113,7 @@ function AdminCustomerDashBoard() {
       </Box>
       <Spacer/>
       <Box mb={4} >
-        <Button colorScheme='gray' mr={2}
+        <Button colorScheme='purple' mr={2}
         onClick={()=>{
           navigate('/admin-customer_register')
         }}
