@@ -62,7 +62,7 @@ function CustomerHomePage() {
           textAlign="center"
           color="teal.500"
         >
-          Welcome to the Helpdesk!
+          {`Welcome to the HelpDeskPro ${localStorage.getItem('name')} !`}
         </Heading>
         <Box
           p={6}
@@ -75,7 +75,7 @@ function CustomerHomePage() {
             Manage Your Account
           </Heading>
           <Text fontSize="md" mb={6}>
-            Access your tickets, manage your profile, and stay updated with your helpdesk requests.
+            Access your tickets, manage your profile, and stay updated with your helpdeskpro requests.
           </Text>
           <Stack spacing={4}>
             <Button
