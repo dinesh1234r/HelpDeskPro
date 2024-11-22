@@ -11,9 +11,9 @@ import AdminDashboard from './Admin/AdminDashboard';
 import AdminCustomerDashBoard from './Admin/AdminCustomerDashBoard';
 import AdminCustomerAdd from './Admin/AdminCustomerAdd';
 import Auth from './Auth';
+import NotFound from './NotFound/NotFound';
 
 function App() {
-  console.log(process.env.REACT_APP_API_KEY)
   return (
     <Router>
       <Routes>
@@ -27,6 +27,7 @@ function App() {
         <Route path='/admin_dashboard' element={<AdminDashboard/>}/>
         <Route path='/admin-customer_dashboard' element={<AdminCustomerDashBoard/>}/>
         <Route path='/admin-customer_register' element={<AdminCustomerAdd/>}/>
+        <Route path='/*' element={<NotFound/>}/>
       </Routes>
     </Router>
   );
